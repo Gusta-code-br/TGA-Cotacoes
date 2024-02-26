@@ -192,7 +192,7 @@ class TelaInicial:
             valor = self.InputDado.get()
             self.cursor.execute("SELECT tc.codcotacao, tc.datacotacao, tc.codcomprador, tco.codcfo "
                                 "FROM tcotacao tc JOIN tcotacaoorc tco ON tc.codcotacao = tco.codcotacao "
-                                "WHERE tco.codcfo LIKE ?", (f"%{valor}%",))
+                                "WHERE tco.codcfo LIKE ? OR tco.nomefantasia LIKE ?", (f"%{valor}%",))
             result = self.cursor.fetchall()
             for row in result:
                 self.result_tree.insert('', tk.END, values=row)
