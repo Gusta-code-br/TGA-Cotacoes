@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+import customtkinter
 import fdb
 import hashlib
 import pyperclip
@@ -12,18 +13,18 @@ class MyApp:
         self.root = root
         self.root.title("TGA - Cotação")
 
-        self.UserName = tk.Label(root, text="Usuário: ")
+        self.UserName = customtkinter.CTkLabel(root, text="Usuário: ")
         self.UserName.grid(padx=(20), pady=(0), row=0, column=1, sticky="nsew")
-        self.PassWord = tk.Label(root, text="Senha: ")
+        self.PassWord = customtkinter.CTkLabel(root, text="Senha: ")
         self.PassWord.grid(padx=(20), pady=(0), row=1, column=1, sticky="nsew")
-        self.EntryUser = tk.Entry(root)
+        self.EntryUser = customtkinter.CTkEntry(root)
         self.EntryUser.grid(padx=(20), pady=(0), row=0, column=2, sticky="nsew")
-        self.EntryPass = tk.Entry(root, show="*")
+        self.EntryPass = customtkinter.CTkEntry(root, show="*")
         self.EntryPass.grid(padx=(20), pady=(20), row=1, column=2, sticky="nsew")
 
-        self.ButtonBD = tk.Button(root, text="DB", command=self.database)
+        self.ButtonBD = customtkinter.CTkButton(root, text="DB", command=self.database)
         self.ButtonBD.grid(padx=(10), pady=(10), row=3, column=1, sticky="nsew")
-        self.GetIn = tk.Button(root, text="Login", command=self.tela_inicial)
+        self.GetIn = customtkinter.CTkButton(root, text="Login", command=self.tela_inicial)
         self.GetIn.grid(padx=(10), pady=(10), row=3, column=2, sticky="nsew")
 
     def database(self):
@@ -63,27 +64,27 @@ class ConfigDB:
     def __init__(self, root):
         self.root = root
 
-        self.UserName = tk.Label(text="Usuário: ")
+        self.UserName = customtkinter.CTkLabel(root, text="Usuário: ")
         self.UserName.grid(padx=(20), pady=(0), row=0, column=1, sticky="nsew")
-        self.PassWord = tk.Label(text="Senha: ")
+        self.PassWord = customtkinter.CTkLabel(root, text="Senha: ")
         self.PassWord.grid(padx=(20), pady=(0), row=1, column=1, sticky="nsew")
-        self.EntryUser = tk.Entry()
+        self.EntryUser = customtkinter.CTkEntry(master=root)
         self.EntryUser.insert(0, "SYSDBA")
         self.EntryUser.grid(padx=(20), pady=(0), row=0, column=2, sticky="nsew")
-        self.EntryPass = tk.Entry(show="*")
+        self.EntryPass = customtkinter.CTkEntry(root, show="*")
         self.EntryPass.insert(0, "masterkey")
         self.EntryPass.grid(padx=(20), pady=(20), row=1, column=2, sticky="nsew")
 
-        self.CaminhoLabel = tk.Label(text="Caminho: ")
+        self.CaminhoLabel = customtkinter.CTkLabel(master=root, text="Caminho: ")
         self.CaminhoLabel.grid(padx=(10), pady=(10), row=3, column=1, sticky="nsew")
-        self.CaminhoDB = tk.Entry()
+        self.CaminhoDB = customtkinter.CTkEntry(master=root)
         self.CaminhoDB.insert(0, "D:\TGA\TGA.FDB")
         self.CaminhoDB.grid(padx=(10), pady=(10), row=3, column=2, sticky="nsew")
 
-        self.conection = tk.Button(text="Conectar", command=self.connect)
+        self.conection = customtkinter.CTkButton(master=root, text="Conectar", command=self.connect)
         self.conection.grid(padx=(10), pady=(10), row=4, column=1, sticky="nsew")
 
-        self.GetBack = tk.Button(text="Voltar", command=self.voltar)
+        self.GetBack = customtkinter.CTkButton(master=root, text="Voltar", command=self.voltar)
         self.GetBack.grid(padx=(10), pady=(10), row=4, column=2, sticky="nsew")
 
     def voltar(self):
@@ -121,41 +122,44 @@ class ConfigDB:
 
 class TelaInicial:
     def __init__(self, root):
+        self.TipoDado = None
         self.root = root
         self.root.title("TGA - Cotação")
 
-        self.GerarLink = tk.Button(text="Gerar \n Link", command=self.geraLink)
+        self.GerarLink = customtkinter.CTkButton(master=root, text="Gerar \n Link", command=self.geraLink)
         self.GerarLink.grid(padx=(20), pady=(20), row=1, column=1, sticky="nsew")
 
-        self.RespostaFornecedor = tk.Button(text="Resposta do \n Fornecedor")
+        self.RespostaFornecedor = customtkinter.CTkButton(root, text="Resposta do \n Fornecedor")
         self.RespostaFornecedor.grid(padx=(20), pady=(20), row=2, column=1, sticky="nsew")
 
-        self.VisualizarStatus = tk.Button(text="Visualizar\n Status")
+        self.VisualizarStatus = customtkinter.CTkButton(root, text="Visualizar\n Status")
         self.VisualizarStatus.grid(padx=(20), pady=(20), row=3, column=1, sticky="nsew")
 
         # self.config_db = ConfigDB()
 
     def geraLink(self):
 
-        self.TipoDado = ttk.Combobox(root, values=['Automático', 'Data da Cotação', 'Fornecedor', 'ID Cotação'])
+        self.TipoDado = customtkinter.CTkComboBox(master=root, values=['Automático', 'Data da Cotação', 'Fornecedor', 'ID Cotação'])
         # self.TipoDado.index(0)
         self.TipoDado.grid(padx=(100, 10), pady=(30), row=1, column=2, sticky="nsew")
 
-        self.InputDado = tk.Entry()
+        self.InputDado = customtkinter.CTkEntry(root)
         self.InputDado.grid(padx=(10), pady=(30), row=1, column=3, columnspan=3, sticky="nsew")
 
-        self.Buscar = tk.Button(text="Buscar", command=self.tratamento)
+        self.Buscar = customtkinter.CTkButton(master=root, text="Buscar", command=self.tratamento)
         self.Buscar.grid(padx=(10), pady=(30), row=1, column=6, sticky="nsew")
 
         self.result_tree = ttk.Treeview(self.root, columns=('Número da Cotação', 'Data da Cotação', 'Comprador', 'Fornecedor'))  # Adicione quantas colunas forem necessárias
         self.result_tree.grid(row=2, column=2, columnspan=6, rowspan=6, padx=100, pady=10, sticky="nsew")
 
+        self.configure_treeview(self.result_tree)
+
         # Configuração das colunas da Treeview
-        self.result_tree.column('#0', width=1, anchor='center')
-        self.result_tree.column('#1', width=180, anchor='center')
-        self.result_tree.column('#2', width=100, anchor='center')
-        self.result_tree.column('#3', width=200, anchor='center')
-        self.result_tree.column('#4', width=250, anchor='center')
+        self.result_tree.column('#0', width=1, anchor='center', )
+        self.result_tree.column('#1', width=200, anchor='center')
+        self.result_tree.column('#2', width=200, anchor='center')
+        self.result_tree.column('#3', width=250, anchor='center')
+        self.result_tree.column('#4', width=300, anchor='center')
         # Adicione os cabeçalhos das colunas
         self.result_tree.heading('#1', text='Número da Cotação')
         self.result_tree.heading('#2', text='Data da Cotação')
@@ -165,6 +169,11 @@ class TelaInicial:
 
         self.connection = fdb.connect(host='localhost', database='C:\TGA\Dados\TGA.FDB', user='SYSDBA', password='masterkey')
         self.cursor = self.connection.cursor()
+
+    def configure_treeview(self, tree):
+        style = ttk.Style()
+        style.configure("Treeview.Heading", font=("Arial", 14, ), background=[('active', '#d9d9d9')])  # Tamanho da fonte para os cabeçalhos das colunas
+        style.configure("Treeview", font=("Arial", 12))
 
     def tratamento(self):
         dados = self.TipoDado.get()
@@ -176,7 +185,7 @@ class TelaInicial:
                                 (f"%{valor}%", f"%{valor}%", f"%{valor}%"))
             result = self.cursor.fetchall()
             for row in result:
-                self.result_tree.insert('', tk.END, values=row)
+                self.result_tree.insert('', customtkinter.END, values=row)
 
         elif dados == "Data da Cotação":
             self.limpar_resultados()
@@ -185,17 +194,18 @@ class TelaInicial:
                                 (f"%{valor}%",))
             result = self.cursor.fetchall()
             for row in result:
-                self.result_tree.insert('', tk.END, values=row)
+                self.result_tree.insert('', customtkinter.END, values=row)
 
         elif dados == "Fornecedor":
             self.limpar_resultados()
             valor = self.InputDado.get()
             self.cursor.execute("SELECT tc.codcotacao, tc.datacotacao, tc.codcomprador, tco.codcfo "
                                 "FROM tcotacao tc JOIN tcotacaoorc tco ON tc.codcotacao = tco.codcotacao "
-                                "WHERE tco.codcfo LIKE ? OR tco.nomefantasia LIKE ?", (f"%{valor}%",))
+                                "JOIN fcfo ON tco.codcfo = fcfo.codcfo "
+                                "WHERE tco.codcfo LIKE ? OR fcfo.nomefantasia LIKE ?", (f"%{valor}%", f"%{valor}%",))
             result = self.cursor.fetchall()
             for row in result:
-                self.result_tree.insert('', tk.END, values=row)
+                self.result_tree.insert('', customtkinter.END, values=row)
 
         else:
             self.limpar_resultados()
@@ -204,7 +214,7 @@ class TelaInicial:
                                 (f"%{valor}%",))
             result = self.cursor.fetchall()
             for row in result:
-                self.result_tree.insert('', tk.END, values=row)
+                self.result_tree.insert('', customtkinter.END, values=row)
 
     def limpar_resultados(self):
         for child in self.result_tree.get_children():
@@ -223,6 +233,6 @@ class TelaInicial:
         messagebox.showwarning("Aviso!", f'"https://tga_cotacao//{values[0]}"\nCopiado para a area de tranferencia!')
 
 if __name__ == "__main__":
-    root = tk.Tk()
+    root = customtkinter.CTk()
     app = MyApp(root)
     root.mainloop()
