@@ -1,10 +1,11 @@
-import tkinter as tk
+#import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import customtkinter
 import fdb
 import hashlib
 import pyperclip
+from configparser import ConfigParser
 
 
 class MyApp:
@@ -13,21 +14,30 @@ class MyApp:
         self.root = root
         self.root.title("TGA - Cotação")
 
+        config = ConfigParser()
+        config.read('desktop.ini')
+        self.hostname = config['DataBase']['host']
+        self.database = config['DataBase']['path']
+        self.username = config['DataBase']['user']
+        self.password = config['DataBase']['password']
+        self.inicialnomeuser = config['Login']['usuario']
+
         self.UserName = customtkinter.CTkLabel(root, text="Usuário: ")
         self.UserName.grid(padx=(20), pady=(0), row=0, column=1, sticky="nsew")
         self.PassWord = customtkinter.CTkLabel(root, text="Senha: ")
         self.PassWord.grid(padx=(20), pady=(0), row=1, column=1, sticky="nsew")
         self.EntryUser = customtkinter.CTkEntry(root)
+        self.EntryUser.insert(0, self.inicialnomeuser)
         self.EntryUser.grid(padx=(20), pady=(0), row=0, column=2, sticky="nsew")
         self.EntryPass = customtkinter.CTkEntry(root, show="*")
         self.EntryPass.grid(padx=(20), pady=(20), row=1, column=2, sticky="nsew")
 
-        self.ButtonBD = customtkinter.CTkButton(root, text="DB", command=self.database)
+        self.ButtonBD = customtkinter.CTkButton(root, text="DB", command=self.DataBase)
         self.ButtonBD.grid(padx=(10), pady=(10), row=3, column=1, sticky="nsew")
         self.GetIn = customtkinter.CTkButton(root, text="Login", command=self.tela_inicial)
         self.GetIn.grid(padx=(10), pady=(10), row=3, column=2, sticky="nsew")
 
-    def database(self):
+    def DataBase(self):
         self.UserName.grid_forget()
         self.PassWord.grid_forget()
         self.EntryUser.grid_forget()
@@ -47,12 +57,11 @@ class MyApp:
         senha = self.EntryPass.get()
         senha_hash = hashlib.md5(senha.encode()).hexdigest().upper()
 
-        self.connection = fdb.connect(host='localhost', database='C:\TGA\Dados\TGA.FDB', user='SYSDBA',
-                                      password='masterkey')
+        self.connection = fdb.connect(host=self.hostname, database=self.database, user=self.username,
+                                      password=self.password)
         self.cursor = self.connection.cursor()
         query = f"SELECT * FROM gusuarios WHERE nome = '{nome}' AND senha = '{senha_hash}'"
         self.cursor.execute(query)
-        #self.cursor.execute(, (f"%{nome}%", f"%{senha_hash}%",))
         if(self.cursor.fetchall()):
             TelaInicial(root)
         else:
@@ -64,21 +73,28 @@ class ConfigDB:
     def __init__(self, root):
         self.root = root
 
+        config = ConfigParser()
+        config.read('desktop.ini')
+        self.hostname = config['DataBase']['host']
+        self.database = config['DataBase']['path']
+        self.username = config['DataBase']['user']
+        self.password = config['DataBase']['password']
+
         self.UserName = customtkinter.CTkLabel(root, text="Usuário: ")
         self.UserName.grid(padx=(20), pady=(0), row=0, column=1, sticky="nsew")
         self.PassWord = customtkinter.CTkLabel(root, text="Senha: ")
         self.PassWord.grid(padx=(20), pady=(0), row=1, column=1, sticky="nsew")
         self.EntryUser = customtkinter.CTkEntry(master=root)
-        self.EntryUser.insert(0, "SYSDBA")
+        self.EntryUser.insert(0, self.username)
         self.EntryUser.grid(padx=(20), pady=(0), row=0, column=2, sticky="nsew")
         self.EntryPass = customtkinter.CTkEntry(root, show="*")
-        self.EntryPass.insert(0, "masterkey")
+        self.EntryPass.insert(0, self.password)
         self.EntryPass.grid(padx=(20), pady=(20), row=1, column=2, sticky="nsew")
 
         self.CaminhoLabel = customtkinter.CTkLabel(master=root, text="Caminho: ")
         self.CaminhoLabel.grid(padx=(10), pady=(10), row=3, column=1, sticky="nsew")
         self.CaminhoDB = customtkinter.CTkEntry(master=root)
-        self.CaminhoDB.insert(0, "D:\TGA\TGA.FDB")
+        self.CaminhoDB.insert(0, self.database)
         self.CaminhoDB.grid(padx=(10), pady=(10), row=3, column=2, sticky="nsew")
 
         self.conection = customtkinter.CTkButton(master=root, text="Conectar", command=self.connect)
@@ -106,8 +122,8 @@ class ConfigDB:
 
             parametros_conexao = {
                 'host': 'localhost',  # Você pode especificar o IP ou o nome do servidor Firebird
-                'database': self.path,  # Caminho para seu banco de dados Firebird
-                'user': self.user,
+                'database': self.database,  # Caminho para seu banco de dados Firebird
+                'user': self.username,
                 'password': self.password,
             }
             con = fdb.connect(**parametros_conexao)
@@ -121,9 +137,19 @@ class ConfigDB:
 
 
 class TelaInicial:
-    def __init__(self, root):
+    def __init__(self, root, **kwargs):
+        super().__init__(**kwargs)
         self.TipoDado = None
         self.root = root
+
+        config = ConfigParser()
+        config.read('desktop.ini')
+        self.hostname = config['DataBase']['host']
+        self.database = config['DataBase']['path']
+        self.username = config['DataBase']['user']
+        self.password = config['DataBase']['password']
+
+        self.root.state('zoomed')
         self.root.title("TGA - Cotação")
 
         self.GerarLink = customtkinter.CTkButton(master=root, text="Gerar \n Link", command=self.geraLink)
@@ -150,12 +176,13 @@ class TelaInicial:
         self.Buscar.grid(padx=(10), pady=(30), row=1, column=6, sticky="nsew")
 
         self.result_tree = ttk.Treeview(self.root, columns=('Número da Cotação', 'Data da Cotação', 'Comprador', 'Fornecedor'))  # Adicione quantas colunas forem necessárias
-        self.result_tree.grid(row=2, column=2, columnspan=6, rowspan=6, padx=100, pady=10, sticky="nsew")
+        self.result_tree.grid(row=2, column=2, columnspan=6, rowspan=10, padx=100, pady=10, sticky="nsew")
 
         self.configure_treeview(self.result_tree)
-
+        style = ttk.Style()
+        style.configure("Treeview", rowheight=30)
         # Configuração das colunas da Treeview
-        self.result_tree.column('#0', width=1, anchor='center', )
+        self.result_tree.column('#0', width=1, anchor='center')
         self.result_tree.column('#1', width=200, anchor='center')
         self.result_tree.column('#2', width=200, anchor='center')
         self.result_tree.column('#3', width=250, anchor='center')
@@ -167,7 +194,7 @@ class TelaInicial:
         self.result_tree.heading('#4', text='Fornecedor')
         self.result_tree.bind("<Double-1>", self.on_checkbosclick)
 
-        self.connection = fdb.connect(host='localhost', database='C:\TGA\Dados\TGA.FDB', user='SYSDBA', password='masterkey')
+        self.connection = fdb.connect(host=self.hostname, database=self.database, user=self.username, password=self.password)
         self.cursor = self.connection.cursor()
 
     def configure_treeview(self, tree):
