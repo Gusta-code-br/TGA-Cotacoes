@@ -1,4 +1,3 @@
-#import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import customtkinter
@@ -6,10 +5,12 @@ import fdb
 import hashlib
 import pyperclip
 from configparser import ConfigParser
+import openpyxl
+import pymysql
+import shutil
 
 
 class MyApp:
-
     def __init__(self, root):
         self.root = root
         self.root.title("TGA - Cotação")
@@ -127,7 +128,6 @@ class ConfigDB:
                 'password': self.password,
             }
             con = fdb.connect(**parametros_conexao)
-
             messagebox.showinfo("Conexão bem-sucedida", "Conexão ao Firebird realizada com sucesso!")
 
             # Fechar a conexão
@@ -155,17 +155,13 @@ class TelaInicial:
         self.GerarLink = customtkinter.CTkButton(master=root, text="Gerar \n Link", command=self.geraLink)
         self.GerarLink.grid(padx=(20), pady=(20), row=1, column=1, sticky="nsew")
 
-        self.RespostaFornecedor = customtkinter.CTkButton(root, text="Resposta do \n Fornecedor")
+        self.RespostaFornecedor = customtkinter.CTkButton(root, text="Resposta do \n Fornecedor", command=self.troca_funcao)
         self.RespostaFornecedor.grid(padx=(20), pady=(20), row=2, column=1, sticky="nsew")
 
         self.VisualizarStatus = customtkinter.CTkButton(root, text="Visualizar\n Status")
         self.VisualizarStatus.grid(padx=(20), pady=(20), row=3, column=1, sticky="nsew")
-
-        # self.config_db = ConfigDB()
-
-    def geraLink(self):
-
-        self.TipoDado = customtkinter.CTkComboBox(master=root, values=['Automático', 'Data da Cotação', 'Fornecedor', 'ID Cotação'])
+        self.TipoDado = customtkinter.CTkComboBox(master=root,
+                                                  values=['Automático', 'Data da Cotação', 'Fornecedor', 'ID Cotação'])
         # self.TipoDado.index(0)
         self.TipoDado.grid(padx=(100, 10), pady=(30), row=1, column=2, sticky="nsew")
 
@@ -175,7 +171,8 @@ class TelaInicial:
         self.Buscar = customtkinter.CTkButton(master=root, text="Buscar", command=self.tratamento)
         self.Buscar.grid(padx=(10), pady=(30), row=1, column=6, sticky="nsew")
 
-        self.result_tree = ttk.Treeview(self.root, columns=('Número da Cotação', 'Data da Cotação', 'Comprador', 'Fornecedor'))  # Adicione quantas colunas forem necessárias
+        self.result_tree = ttk.Treeview(self.root, columns=('Número da Cotação', 'Data da Cotação', 'Comprador',
+                                                            'Fornecedor'))  # Adicione quantas colunas forem necessárias
         self.result_tree.grid(row=2, column=2, columnspan=6, rowspan=10, padx=100, pady=10, sticky="nsew")
 
         self.configure_treeview(self.result_tree)
@@ -194,8 +191,13 @@ class TelaInicial:
         self.result_tree.heading('#4', text='Fornecedor')
         self.result_tree.bind("<Double-1>", self.on_checkbosclick)
 
-        self.connection = fdb.connect(host=self.hostname, database=self.database, user=self.username, password=self.password)
+        self.connection = fdb.connect(host=self.hostname, database=self.database, user=self.username,
+                                      password=self.password)
         self.cursor = self.connection.cursor()
+        # self.config_db = ConfigDB()
+
+    def geraLink(self):
+        TelaInicial(root)
 
     def configure_treeview(self, tree):
         style = ttk.Style()
@@ -258,6 +260,34 @@ class TelaInicial:
         item_id = self.result_tree.focus()
         values = self.result_tree.item(item_id, "values")
         messagebox.showwarning("Aviso!", f'"https://tga_cotacao//{values[0]}"\nCopiado para a area de tranferencia!')
+
+    def troca_funcao(self):
+        self.limpar_resultados()
+        self.result_tree.bind("<Double-1>", self.fornec_ans)
+
+    def fornec_ans(self, event):
+        item_id = self.result_tree.focus()
+        checked = self.result_tree.item(item_id)["values"][0]
+        self.baixaExcel()
+
+    def baixaExcel(self):
+        item_id = self.result_tree.focus()
+        values = self.result_tree.item(item_id, "values")
+        texto = f"Retorno da cotação exportado em Excel."
+        messagebox.showinfo("Aviso!", f'{texto}')
+        new_archive = values[0]
+        CreateExcel().create(new_archive)
+
+
+class CreateExcel:
+    def __init__(self):
+        self.original_archive = 'base.xls'
+
+    def create(self, new_archive):
+        self.new_archive = f'C:\\Users\\Usuário\\Desktop\\{new_archive}.xls'
+        shutil.copy(self.original_archive, self.new_archive)
+        print(f'Arquivo criado em {self.new_archive}')
+
 
 if __name__ == "__main__":
     root = customtkinter.CTk()
