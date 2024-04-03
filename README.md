@@ -33,3 +33,21 @@ Informações de Software e sistema:
 Software TGA-Cotações: 
 
 O software foi desenvolvido utilizando a tecnologia Python, escolhida devido ao conhecimento da equipe, facilidade de uso e manutenção, além da compatibilidade com bancos de dados e sua abrangência de funcionalidades. A versão utilizada foi a 3.9, com possibilidade de atualização para versões mais recentes no futuro. Foram empregadas as seguintes bibliotecas para o desenvolvimento do software:
+
+- from tkinter import ttk
+- from tkinter import messagebox
+- import customtkinter
+- import fdb
+- import hashlib
+- import pyperclip
+- from configparser import ConfigParser
+- import openpyxl
+- import pymysql
+- import shutil
+
+Rotina de implementação do sistema:
+
+Para implementar o sistema de cotação TGA, primeiro será necessário executar o instalador do sistema que além de implementar o sistema na máquina, adiciona em "C:\USERS\USER\APPDATA\LOCAL\COTACAO" os arquivos 'desktop.ini' e 'base.xls'. Após instalado é preciso entrar no sistema do TGA Estoque e em 'Cadastros>Segurança>Perfil de Acesso>Acesso personalizado', deve ser criado o perfil de acesso 'ACESSA_COTACAO' os usuário que tiverem seu perfil de acesso com essa opção ativada poderão usar o 'TGA - Cotação'.
+
+Rotina de Utilização do Sistema:
+
