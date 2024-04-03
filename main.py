@@ -16,7 +16,7 @@ class MyApp:
         self.root.title("TGA - Cotação")
 
         config = ConfigParser()
-        config.read('desktop.ini')
+        config.read('c:\\user\\users\\appdata\\local\\cotacao\\desktop.ini')
         self.hostname = config['DataBase']['host']
         self.database = config['DataBase']['path']
         self.username = config['DataBase']['user']
