@@ -51,3 +51,5 @@ Para implementar o sistema de cotação TGA, primeiro será necessário executar
 
 Rotina de Utilização do Sistema:
 
+Após o usuário já ter gerado uma cotação pelo sistema do TGA - Estoque, ele irá ao TGA - Cotação. 1º Step: Primeiro ele deve entrar com o mesmo login e senha que foi criado para o TGA Estoque (Lembrando que o usuário precisa ter acesso para poder acessar). 2º Step: Após a tela de login ele cairá direto na tela de geração de link compartilhavel, nela, ele poderá filtrar a cotação desejada da maneira em que achar melhor. Após filtrar, para gerar o link basta dar um duplo clique na cotação que deseja, ao fazer isso automaticamente na área de transferência do usuário irá estar o link da cotação. 3º Step: Após o fornecedor ter devolvido a cotação, o usuário deve clicar no botão "Resposta Fornecedor" ao ter clicado basta consultar a cotação que deseja baixar, o usuário deve dar um duplo clique na cotação que deseja. O arquivo da cotação será gerado na área de trabalho o nome do arquivo será o código da cotação + código do fornecedor.
+Após isso é necessário carregar no sistema TGA - Estoque utilizado a rotina de Cotação (Ctrl + Alt + O).
