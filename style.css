@@ -1,15 +1,9 @@
-*{
-	padding: 0;
-	margin: 0;
-}
 
 body{
-
 	display: grid;
 	place-content: center;
 	grid-template-columns: auto;
 	width: 100%;
-	height: 100vh;
 	margin: auto;
 	font-family: monospace;
 	margin-top: 50px;
@@ -26,4 +20,21 @@ div{
 div:hover{
 	transform: scale(1.03);
 	transition: 300ms;
+}
+
+header{
+	display: block;
+    text-align: center;
+    margin: auto;
+    left: 0;
+    right: 0;
+}
+.back_go{
+	display: grid;
+	grid-template-columns: auto auto;
+	place-content: justify;
+	box-shadow: none;
+}
+.back_go:hover{
+	transform: none;
 }

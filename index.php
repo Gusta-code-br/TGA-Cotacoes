@@ -1,52 +1,42 @@
-<!DOCTYPE HTML>
-<html>
-	<head>
-		<meta name="viewport" content="width=100%, initial-scale=1">
-		<link rel="stylesheet" href="style.css">
-	</head>
-	<body>
-		<?php
+<?php
+// Verifica se as variáveis de usuário e senha estão vazias
+if (empty($_POST['user-name']) || empty($_POST['password'])) {
+    header('Location: login.php');
+    exit;
+}
 
-			// Configurações do banco de dados
-			$servername = "localhost"; // Host do banco de dados
-			$username = "root"; // Nome de usuário do banco de dados
-			$password = ""; // Senha do banco de dados
-			$database = "cotacao"; // Nome do banco de dados
+$user = $_POST['user-name'];
+$senha = $_POST['password'];
 
-			// Cria a conexão
-			$conn = new mysqli($servername, $username, $password, $database);
+$host = 'localhost';
+$db = 'tga-cotacao';
+$username = 'root';
+$password = '';
 
-			// Verifica a conexão
-			if ($conn->connect_error) {
-			    die("Falha na conexão: " . $conn->connect_error);
-			}
+$conn = new mysqli($host, $username, $password, $db);
 
-			// Query SQL
-			$sql = "SELECT email FROM produtos WHERE codcfo = 'cod00' GROUP BY email";
+if ($conn->connect_error) {
+    die("Erro de conexão: " . $conn->connect_error);
+}
 
-			// Executa a query
-			$result = $conn->query($sql);
+$sql = "SELECT password, codcfo FROM gusuarios WHERE `username` = '$user' AND `password` = '$senha'";
+$result = $conn->query($sql);
 
-			// Verifica se há resultados
-			if ($result->num_rows > 0) {
-			    // Itera sobre os resultados
-			    while($row = $result->fetch_assoc()) {
-			        // Exibe os dados
-			        ?>
-			        <div>
-					    <p>Cotação de: <?php echo $row["email"]; ?></p>
-					    <a href="form_produto.php?email=<?php echo urlencode($row["email"]); ?>">Ver cotação</a>
-					</div>
-			        <?php 
-			    }
-			} else {
-			    echo "Não foram encontrados resultados";
-			}
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $hashed_password = $row['password'];
+    
+    // Verifica se a senha fornecida pelo usuário corresponde à senha no banco de dados
+    if ($sql) {
+        header('Location: homepage.php?codcfo='. $row['codcfo']);
+        exit;
+    } else {
+        header('Location: login.php');
+        exit;
+    }
+} else {
+    echo "Usuário não encontrado.";
+}
 
-			// Fecha a conexão
-			$conn->close();
-
-		?>
-
-	</body>
-</html>
+$conn->close();
+?>
